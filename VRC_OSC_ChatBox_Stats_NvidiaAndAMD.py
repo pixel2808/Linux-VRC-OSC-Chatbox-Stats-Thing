@@ -35,9 +35,9 @@ def get_linux_distro():
                     distro_name = line.strip().split("=")[1].replace('"', '')
                 elif line.startswith("VERSION="):
                     distro_version = line.strip().split("=")[1].replace('"', '')
-            return f"🐧 {distro_name} {distro_version}"
+            return f"{distro_name} {distro_version}"
     except FileNotFoundError:
-        return "🐧 Unknown Linux Distro"
+        return "Unknown Linux Distro"
 
 # Function to get the current playing media info using MPRIS
 def get_media_info():
@@ -51,14 +51,14 @@ def get_media_info():
                 metadata = player.Get('org.mpris.MediaPlayer2.Player', 'Metadata', dbus_interface='org.freedesktop.DBus.Properties')
                 title = metadata.get('xesam:title', 'Unknown Title')[:25]
                 artist = metadata.get('xesam:artist', ['Unknown Artist'])[0][:15]
-                return f"🎵 {title} - {artist}"
+                return f"{title} - {artist}"
             except dbus.DBusException:
                 continue
 
-        return "🎵 No media playing"
+        return "No media playing"
     except dbus.DBusException as e:
         print(f"DBus error: {e}")
-        return "🎵 No media player detected"
+        return "No media player detected"
 
 # Function to get GPU usage (assuming NVIDIA GPU with nvidia-smi)
 def get_gpu_usage():
@@ -70,17 +70,17 @@ def get_gpu_usage():
         gpu_stats = result.stdout.strip().split(', ')
 
         if len(gpu_stats) != 3:
-            return "🎮 Error retrieving GPU stats"
+            return "Error retrieving GPU stats"
 
         gpu_usage = gpu_stats[0]
         gpu_memory_free = round(int(gpu_stats[1]) / 1024, 1)  # GB
         gpu_memory_total = round(int(gpu_stats[2]) / 1024, 1)  # GB
         gpu_memory_used = round(gpu_memory_total - gpu_memory_free, 1)
 
-        return f"🎮 {gpu_usage}% | {gpu_memory_used}GB / {gpu_memory_total}GB"
+        return f"{gpu_usage}% @ {gpu_memory_used}GB / {gpu_memory_total}GB"
     except Exception as e:
         print(f"Error getting GPU usage: {e}")
-        return "🎮 No GPU or error retrieving GPU stats"
+        return "No GPU or error retrieving GPU stats"
 
 # AMD GPU Shit
 def get_amdgpu_usage():
@@ -112,7 +112,7 @@ def get_amdgpu_usage():
                 vram_mb_used = float(tokens[2].lower().replace('mb', ''))
 
         if gpu_usage is None or vram_mb_used is None:
-            return "🎮 Error retrieving GPU stats"
+            return "Error retrieving GPU stats"
 
         # Read real VRAM total in bytes and convert to GB
         with open('/sys/class/drm/card0/device/mem_info_vram_total', 'r') as f:
@@ -122,10 +122,10 @@ def get_amdgpu_usage():
         # Convert sampled VRAM usage in MB to GB
         vram_used_gb = round(vram_mb_used / 1024, 2)
 
-        return f"🎮 {gpu_usage}% | {vram_used_gb}GB / {vram_total_gb}GB"
+        return f"{gpu_usage}% @ {vram_used_gb}GB / {vram_total_gb}GB"
     except Exception as e:
         print(f"Error getting AMD GPU usage: {e}")
-        return "🎮 No GPU or error retrieving GPU stats"
+        return "No GPU or error retrieving GPU stats"
 
 # Function to get CPU and RAM usage, along with CPU GHz and max RAM
 def get_system_usage():
@@ -146,21 +146,21 @@ def get_current_time(is_24hr=True):
     else:
         return datetime.datetime.now().strftime("%I:%M:%S %p")  # 12-hour format
 
-# GUI for toggles and chatbox
 class SystemInfoUI(tk.Tk):
     def __init__(self):
         super().__init__()
+
         icon_path = resource_path("Icon.png")
         self.iconphoto(False, tk.PhotoImage(file=icon_path))
         self.title("VRC OSC Chatbox Stats")
         self.geometry("600x750")
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
+
         self.is_sending = False
         self.queue = queue.Queue()
-        self.message_duration = 5  # Default duration in seconds
-        self.is_24hr = tk.BooleanVar(value=True)  # Default to 24-hour format
+        self.message_duration = 5
+        self.is_24hr = tk.BooleanVar(value=True)
 
-        # Boolean variables for each checkbox
         self.cpu_var = tk.BooleanVar(value=True)
         self.ram_var = tk.BooleanVar(value=True)
         self.gpu_var = tk.BooleanVar(value=True)
@@ -169,46 +169,85 @@ class SystemInfoUI(tk.Tk):
         self.linux_var = tk.BooleanVar(value=True)
         self.amdgpu_var = tk.BooleanVar(value=False)
 
-        # Set up UI components
+        self.create_styles()
         self.create_widgets()
-        self.apply_modern_theme()
+
+    def create_styles(self):
+        self.configure(bg="#2e3b4e")
+        style = ttk.Style(self)
+        style.theme_use('clam')
+
+        style.configure("TCheckbutton",
+                        background="#2e3b4e",
+                        foreground="#e0e0e0",
+                        font=("Segoe UI", 12),
+                        padding=5)
+        style.configure("TButton",
+                        font=("Segoe UI", 12),
+                        padding=8)
+        style.map("TButton",
+                  background=[("active", "#4a5a7a"), ("!active", "#5f78a1")],
+                  foreground=[("disabled", "#a0a0a0"), ("!disabled", "white")])
+
+        style.map("TCheckbutton",
+                  background=[("active", "#4a5a7a")],
+                  foreground=[("active", "white")])
+
+        style.configure("TLabel",
+                        background="#2e3b4e",
+                        foreground="#ffffff",
+                        font=("Segoe UI", 12))
+
+        style.configure("TEntry",
+                        fieldbackground="#3f4a61",
+                        foreground="#ffffff",
+                        font=("Segoe UI", 12),
+                        padding=5)
 
     def create_widgets(self):
-        # Create checkboxes for each data point
-        self.cpu_check = ttk.Checkbutton(self, text="Send CPU Info", variable=self.cpu_var, style="TCheckbutton")
+        self.configure(bg="#2e3b4e")
+        main_frame = tk.Frame(self, bg="#2e3b4e", padx=20, pady=20)
+        main_frame.pack(fill="both", expand=True)
+
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.columnconfigure(1, weight=1)
+
+        left_frame = tk.Frame(main_frame, bg="#2e3b4e")
+        right_frame = tk.Frame(main_frame, bg="#2e3b4e")
+
+        left_frame.grid(row=0, column=0)
+        right_frame.grid(row=0, column=1)
+
+        self.cpu_check = ttk.Checkbutton(left_frame, text="Send CPU Info", variable=self.cpu_var, style="TCheckbutton")
         self.cpu_check.pack(pady=10)
 
-        self.ram_check = ttk.Checkbutton(self, text="Send RAM Info", variable=self.ram_var, style="TCheckbutton")
+        self.ram_check = ttk.Checkbutton(left_frame, text="Send RAM Info", variable=self.ram_var, style="TCheckbutton")
         self.ram_check.pack(pady=10)
 
-        self.gpu_check = ttk.Checkbutton(self, text="Send GPU Info", variable=self.gpu_var, style="TCheckbutton")
+        self.gpu_check = ttk.Checkbutton(left_frame, text="Send GPU Info", variable=self.gpu_var, style="TCheckbutton")
         self.gpu_check.pack(pady=10)
 
-        self.amdgpu_check = ttk.Checkbutton(self, text="Send AMD GPU Info", variable=self.amdgpu_var, style="TCheckbutton")
+        self.amdgpu_check = ttk.Checkbutton(left_frame, text="Send AMD GPU Info", variable=self.amdgpu_var, style="TCheckbutton")
         self.amdgpu_check.pack(pady=10)
 
-        self.media_check = ttk.Checkbutton(self, text="Send Media Info", variable=self.media_var, style="TCheckbutton")
+        self.media_check = ttk.Checkbutton(right_frame, text="Send Media Info", variable=self.media_var, style="TCheckbutton")
         self.media_check.pack(pady=10)
 
-        self.time_check = ttk.Checkbutton(self, text="Send Time Info", variable=self.time_var, style="TCheckbutton")
+        self.time_check = ttk.Checkbutton(right_frame, text="Send Time Info", variable=self.time_var, style="TCheckbutton")
         self.time_check.pack(pady=10)
 
-        self.linux_check = ttk.Checkbutton(self, text="Send Linux Distro", variable=self.linux_var, style="TCheckbutton")
+        self.linux_check = ttk.Checkbutton(right_frame, text="Send Linux Distro", variable=self.linux_var, style="TCheckbutton")
         self.linux_check.pack(pady=10)
 
-        # Toggle for 12-hour or 24-hour time format
-        self.time_format_check = ttk.Checkbutton(self, text="Use 24-Hour Format", variable=self.is_24hr, style="TCheckbutton")
+        self.time_format_check = ttk.Checkbutton(right_frame, text="Use 24-Hour Format", variable=self.is_24hr, style="TCheckbutton")
         self.time_format_check.pack(pady=15)
 
-        # Button to start/stop sending data
         self.start_button = ttk.Button(self, text="Start Sending", command=self.toggle_sending, style="TButton")
         self.start_button.pack(pady=20)
 
-        # Status label showing the current state (Sending/Not Sending)
         self.status_label = ttk.Label(self, text="Status: Not Sending", foreground="red", style="TLabel")
         self.status_label.pack(pady=10)
 
-        # Chatbox Section
         self.chat_label = ttk.Label(self, text="Enter a message:", style="TLabel")
         self.chat_label.pack(pady=15)
 
@@ -219,11 +258,9 @@ class SystemInfoUI(tk.Tk):
         self.send_button = ttk.Button(self, text="Send Message", command=self.send_chat_message, style="TButton")
         self.send_button.pack(pady=10)
 
-        # Duration input to control message display time in VRChat
         self.duration_label = ttk.Label(self, text="Message Display Duration (seconds):", style="TLabel")
         self.duration_label.pack(pady=15)
 
-        # Fix: Use tk.Entry instead of ttk.Entry
         self.duration_entry = tk.Entry(self, font=("Arial", 12), fg="black", insertbackground="gray")
         self.duration_entry.insert(0, "5")  # Default to 5 seconds
         self.duration_entry.pack(pady=10)
@@ -253,19 +290,19 @@ class SystemInfoUI(tk.Tk):
 
             message = ""
             if linux_distro:
-                message += f"{linux_distro}\n"
+                message += f"🐧 {linux_distro}\n"
             if self.time_var.get():
                 message += f"⏰ {current_time}\n"
             if self.media_var.get():
-                message += f"{media_info}\n"
+                message += f"🎵 {media_info}\n"
             if self.cpu_var.get():
                 message += f"💻 {cpu_usage}% @ {cpu_ghz}GHz\n"
             if self.ram_var.get():
-                message += f"💾 {ram_gb}GB / {max_ram_gb}GB\n"
+                message += f"⚙️ {ram_gb}GB / {max_ram_gb}GB\n"
             if self.gpu_var.get():
-                message += f"{gpu_usage}"
+                message += f"🎮 {gpu_usage}"
             if self.amdgpu_var.get():
-                message += f"{amdgpu_usage}"
+                message += f"🎮 {amdgpu_usage}"
 
             # Truncate the message if it's too long
             if len(message) > MAX_MESSAGE_LENGTH:
@@ -297,15 +334,6 @@ class SystemInfoUI(tk.Tk):
         except ValueError:
             duration = 5  # Default duration if the value is invalid
         return duration
-
-    def apply_modern_theme(self):
-        # Apply a modern theme with a dark background and clean design
-        self.configure(bg="#2e3b4e")
-        style = ttk.Style(self)
-        style.configure("TCheckbutton", background="#2e3b4e", foreground="#ffffff", font=("Arial", 12))
-        style.configure("TButton", background="#5f78a1", foreground="#ffffff", font=("Arial", 12))
-        style.configure("TLabel", background="#2e3b4e", foreground="#ffffff", font=("Arial", 12))
-        style.configure("TEntry", background="#3f4a61", foreground="#ffffff", font=("Arial", 12))
 
     def on_closing(self):
         self.is_sending = False
