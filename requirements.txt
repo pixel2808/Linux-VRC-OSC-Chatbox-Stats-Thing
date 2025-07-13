@@ -1,0 +1,3 @@
+psutil
+python-osc
+dbus-python
