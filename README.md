@@ -8,26 +8,26 @@ Download the latest release:
 
 Just download and run the executable. Make sure it's marked as executable:
 
-chmod +x VRC_OSC_ChatBox_Stats_NvidiaAndAMD
-./VRC_OSC_ChatBox_Stats_NvidiaAndAMD
+    chmod +x VRC_OSC_ChatBox_Stats_NvidiaAndAMD
+    ./VRC_OSC_ChatBox_Stats_NvidiaAndAMD
 
 ⚙️ Run From Source
 
-    Create and activate a virtual environment:
+Create and activate a virtual environment:
 
-    For Bash/Zsh:
+For Bash/Zsh:
 
-python3 -m venv oscenv
-source oscenv/bin/activate
+    python3 -m venv oscenv
+    source oscenv/bin/activate
 
 For Fish shell:
 
-python3 -m venv oscenv
-source oscenv/bin/activate.fish
+    python3 -m venv oscenv
+    source oscenv/bin/activate.fish
 
 Install dependencies:
 
-pip install -r requirements.txt
+    pip install -r requirements.txt
 
 Run the script:
 
@@ -37,8 +37,8 @@ Run the script:
 
 Make sure you're in the virtual environment first (source oscenv/...), then run:
 
-pyinstaller --onefile --add-data "Icon.png:." VRC_OSC_ChatBox_Stats_NvidiaAndAMD.py
+    pyinstaller --onefile --add-data "Icon.png:." VRC_OSC_ChatBox_Stats_NvidiaAndAMD.py
 
-    The resulting binary will be in the dist/ directory.
+The resulting binary will be in the dist/ directory.
 
-    --add-data includes the icon in the executable (you can update "Icon.png:. " to your actual icon path if needed).
+--add-data includes the icon in the executable (you can update "Icon.png:. " to your actual icon path if needed).
