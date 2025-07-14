@@ -154,6 +154,7 @@ class SystemInfoUI(tk.Tk):
         self.iconphoto(False, tk.PhotoImage(file=icon_path))
         self.title("VRC OSC Chatbox Stats")
         self.geometry("600x750")
+        self.resizable(False, False)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.is_sending = False
@@ -211,12 +212,15 @@ class SystemInfoUI(tk.Tk):
 
         main_frame.columnconfigure(0, weight=1)
         main_frame.columnconfigure(1, weight=1)
+        main_frame.columnconfigure(0, weight=1)
 
         left_frame = tk.Frame(main_frame, bg="#2e3b4e")
         right_frame = tk.Frame(main_frame, bg="#2e3b4e")
+        start_frame = tk.Frame(main_frame, bg="#2e3b4e")
 
         left_frame.grid(row=0, column=0)
         right_frame.grid(row=0, column=1)
+        start_frame.grid(row=1, column=0, columnspan=2, sticky="n")
 
         self.cpu_check = ttk.Checkbutton(left_frame, text="Send CPU Info", variable=self.cpu_var, style="TCheckbutton")
         self.cpu_check.pack(pady=10)
@@ -242,26 +246,26 @@ class SystemInfoUI(tk.Tk):
         self.time_format_check = ttk.Checkbutton(right_frame, text="Use 24-Hour Format", variable=self.is_24hr, style="TCheckbutton")
         self.time_format_check.pack(pady=15)
 
-        self.start_button = ttk.Button(self, text="Start Sending", command=self.toggle_sending, style="TButton")
-        self.start_button.pack(pady=20)
+        self.start_button = ttk.Button(start_frame, text="Start Sending", command=self.toggle_sending, style="TButton")
+        self.start_button.pack(pady=15)
 
-        self.status_label = ttk.Label(self, text="Status: Not Sending", foreground="red", style="TLabel")
+        self.status_label = ttk.Label(start_frame, text="Status: Not Sending", foreground="red", style="TLabel")
         self.status_label.pack(pady=10)
 
-        self.chat_label = ttk.Label(self, text="Enter a message:", style="TLabel")
+        self.chat_label = ttk.Label(start_frame, text="Enter a message:", style="TLabel")
         self.chat_label.pack(pady=15)
 
-        self.chat_text = tk.Text(self, height=5, width=45, font=("Arial", 12))  # Increased font size for better readability
+        self.chat_text = tk.Text(start_frame, height=5, width=45, font=("Arial", 12))  # Increased font size for better readability
         self.chat_text.pack(pady=10)
         self.chat_text.bind("<Return>", self.send_chat_message)  # Bind Enter key to send message
 
-        self.send_button = ttk.Button(self, text="Send Message", command=self.send_chat_message, style="TButton")
+        self.send_button = ttk.Button(start_frame, text="Send Message", command=self.send_chat_message, style="TButton")
         self.send_button.pack(pady=10)
 
-        self.duration_label = ttk.Label(self, text="Message Display Duration (seconds):", style="TLabel")
+        self.duration_label = ttk.Label(start_frame, text="Message Display Duration (seconds):", style="TLabel")
         self.duration_label.pack(pady=15)
 
-        self.duration_entry = tk.Entry(self, font=("Arial", 12), fg="black", insertbackground="gray")
+        self.duration_entry = tk.Entry(start_frame, font=("Arial", 12), fg="black", insertbackground="gray")
         self.duration_entry.insert(0, "5")  # Default to 5 seconds
         self.duration_entry.pack(pady=10)
 
