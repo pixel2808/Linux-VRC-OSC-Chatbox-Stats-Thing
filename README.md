@@ -1,7 +1,7 @@
 Made this cause there was nothing like this at the time.
 Go ahead and use this code for whatever but you are probably better of writing this from scratch cause this is a mess.
 
-<img width="642" height="819" alt="Screenshot_20250714_135522" src="https://github.com/user-attachments/assets/eddd887c-38bb-412f-85f6-2befdd2dd47b" />
+<img width="300" alt="Screenshot_20250714_135522" src="https://github.com/user-attachments/assets/eddd887c-38bb-412f-85f6-2befdd2dd47b" />
 
 
 🔽 Download (Precompiled Binary)
