@@ -7,7 +7,9 @@ Go ahead and use this code for whatever but you are probably better of writing t
 🔽 Download (Precompiled Binary)
 
 Download the latest release:
-➡️ [Download VRC_OSC_ChatBox_Stats_NvidiaAndAMD](https://github.com/pixel2808/Linux-VRC-OSC-Chatbox-Stats-Thing/releases/latest/download/VRC_OSC_ChatBox_Stats_NvidiaAndAMD)
+➡️ [Download VRC_OSC_ChatBox_Stats_NvidiaAndAMDGPU_TOP](https://github.com/pixel2808/Linux-VRC-OSC-Chatbox-Stats-Thing/releases/download/Whoisyourself/VRC_OSC_ChatBox_Stats_NvidiaAndAMDButItsUsingamdgpu_top)
+You will also need [amdgpu_top](https://github.com/Umio-Yasuno/amdgpu_top)
+Older versions are useing radeontop so you can try that out if you are haveing issues.
 
 Just download and run the executable. Make sure it's marked as executable:
 
