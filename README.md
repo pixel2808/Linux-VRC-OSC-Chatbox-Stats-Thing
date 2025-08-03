@@ -49,4 +49,4 @@ The resulting binary will be in the dist/ directory.
 
 --add-data includes the icon in the executable (you can update "Icon.png:. " to your actual icon path if needed).
 
-[Make me feel miserable by requesting some crazy features]([https://github.com/Umio-Yasuno/amdgpu_top](https://github.com/pixel2808/Linux-VRC-OSC-Chatbox-Stats-Thing/issues/new))
+[Make me feel miserable by requesting some crazy features]([https://github.com/Umio-Yasuno/amdgpu_top](https://github.com/pixel2808/Linux-VRC-OSC-Chatbox-Stats-Thing/issues/new)
